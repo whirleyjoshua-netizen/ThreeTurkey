@@ -20,15 +20,15 @@ document.querySelectorAll('.waitlist-form').forEach(form => {
             if (res.ok) {
                 input.value = '';
                 btn.textContent = "You're In!";
-                setTimeout(() => { btn.textContent = 'Join the Waitlist'; btn.disabled = false; }, 3000);
+                setTimeout(() => { btn.textContent = 'Claim Your Spot'; btn.disabled = false; }, 3000);
                 loadCount();
             } else {
                 btn.textContent = data.detail || 'Already signed up';
-                setTimeout(() => { btn.textContent = 'Join the Waitlist'; btn.disabled = false; }, 2500);
+                setTimeout(() => { btn.textContent = 'Claim Your Spot'; btn.disabled = false; }, 2500);
             }
         } catch {
             btn.textContent = 'Error — try again';
-            setTimeout(() => { btn.textContent = 'Join the Waitlist'; btn.disabled = false; }, 2500);
+            setTimeout(() => { btn.textContent = 'Claim Your Spot'; btn.disabled = false; }, 2500);
         }
     });
 });
@@ -39,7 +39,12 @@ async function loadCount() {
         const res = await fetch('/api/waitlist/count');
         const { count } = await res.json();
         const el = document.getElementById('waitlist-count');
-        if (el && count > 0) el.textContent = count.toLocaleString() + ' people on the waitlist. ';
+        if (el && count > 0) el.textContent = count.toLocaleString() + ' people have claimed a spot. ';
+        const spots = document.getElementById('spots-remaining');
+        if (spots) {
+            const remaining = Math.max(0, 500 - count);
+            spots.textContent = remaining + ' of 500 spots remaining';
+        }
     } catch { /* silent */ }
 }
 loadCount();

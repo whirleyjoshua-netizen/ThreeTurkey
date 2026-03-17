@@ -30,8 +30,8 @@ a:hover { text-decoration: underline; }
 
 ul { list-style: none; }
 
-.container { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
-.container-narrow { max-width: 720px; }
+.container { max-width: none; margin: 0; padding: 0 48px; }
+.container-narrow { max-width: none; }
 
 /* ── Buttons ── */
 .btn {
@@ -231,6 +231,11 @@ ul { list-style: none; }
     background: rgba(108,92,231,.06);
     transform: scale(1.04);
 }
+.pricing-single { max-width: 420px; margin-left: auto; margin-right: auto; }
+.pricing-single .price-card-pop { transform: none; }
+.price-compare { color: var(--fg2); font-size: .9rem; margin-top: -16px; margin-bottom: 24px; }
+.btn-lg { padding: 18px 40px; font-size: 1.1rem; }
+.spots-note { margin-top: 16px; font-size: .85rem; color: var(--accent2); font-weight: 600; }
 .popular-badge {
     position: absolute;
     top: -12px;

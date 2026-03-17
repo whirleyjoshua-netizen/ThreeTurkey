@@ -16,7 +16,7 @@ async def lifespan(app: FastAPI):
     await close()
 
 
-app = FastAPI(title="Marqet", lifespan=lifespan)
+app = FastAPI(title="Gobbl", lifespan=lifespan)
 app.include_router(waitlist_router)
 app.mount("/static", StaticFiles(directory=str(STATIC)), name="static")
 

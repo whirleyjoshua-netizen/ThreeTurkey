@@ -1,5 +1,5 @@
 [project]
-name = "marqet"
+name = "gobbl"
 version = "0.1.0"
 description = "AI-powered SEO platform for small/medium orgs"
 requires-python = ">=3.11"
