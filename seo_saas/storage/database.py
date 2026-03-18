@@ -16,6 +16,16 @@ async def connect():
             created_at  TEXT DEFAULT (datetime('now'))
         )"""
     )
+    await db.execute(
+        """CREATE TABLE IF NOT EXISTS customers (
+            id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+            email               TEXT NOT NULL UNIQUE,
+            stripe_customer_id  TEXT,
+            stripe_session_id   TEXT,
+            amount_paid         INTEGER NOT NULL DEFAULT 14900,
+            paid_at             TEXT DEFAULT (datetime('now'))
+        )"""
+    )
     await db.commit()
 
 

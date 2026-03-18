@@ -1,14 +1,14 @@
-/* ── Nav Join button → focus email input ── */
-document.querySelectorAll('a[href="#waitlist"]').forEach(a => {
+/* ── Nav button → focus email input ── */
+document.querySelectorAll('a[href="#checkout"]').forEach(a => {
     a.addEventListener('click', (e) => {
         e.preventDefault();
-        const input = document.querySelector('#waitlist-form input[name="email"]');
+        const input = document.querySelector('#checkout-form input[name="email"]');
         if (input) { input.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => input.focus(), 400); }
     });
 });
 
-/* ── Waitlist Form Handling ── */
-document.querySelectorAll('.waitlist-form').forEach(form => {
+/* ── Checkout Form Handling ── */
+document.querySelectorAll('#checkout-form, #checkout-form-bottom').forEach(form => {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const input = form.querySelector('input[name="email"]');
@@ -17,46 +17,40 @@ document.querySelectorAll('.waitlist-form').forEach(form => {
         if (!email || !input.checkValidity()) { input.reportValidity(); return; }
 
         btn.disabled = true;
-        btn.textContent = 'Joining...';
+        btn.textContent = 'Redirecting to checkout...';
 
         try {
-            const res = await fetch('/api/waitlist', {
+            const res = await fetch('/api/checkout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email }),
             });
             const data = await res.json();
-            if (res.ok) {
-                input.value = '';
-                btn.textContent = "You're In!";
-                setTimeout(() => { btn.textContent = 'Claim Your Spot'; btn.disabled = false; }, 3000);
-                loadCount();
+            if (res.ok && data.url) {
+                window.location.href = data.url;
             } else {
-                btn.textContent = data.detail || 'Already signed up';
-                setTimeout(() => { btn.textContent = 'Claim Your Spot'; btn.disabled = false; }, 2500);
+                btn.textContent = data.detail || 'Something went wrong';
+                setTimeout(() => { btn.textContent = 'Lock In Lifetime Access \u2014 $149'; btn.disabled = false; }, 3000);
             }
         } catch {
-            btn.textContent = 'Error — try again';
-            setTimeout(() => { btn.textContent = 'Claim Your Spot'; btn.disabled = false; }, 2500);
+            btn.textContent = 'Error \u2014 try again';
+            setTimeout(() => { btn.textContent = 'Lock In Lifetime Access \u2014 $149'; btn.disabled = false; }, 3000);
         }
     });
 });
 
-/* ── Waitlist Count ── */
-async function loadCount() {
+/* ── Spots Counter ── */
+async function loadSpots() {
     try {
-        const res = await fetch('/api/waitlist/count');
-        const { count } = await res.json();
-        const el = document.getElementById('waitlist-count');
-        if (el && count > 0) el.textContent = count.toLocaleString() + ' people have claimed a spot. ';
+        const res = await fetch('/api/checkout/spots');
+        const { paid, remaining } = await res.json();
+        const el = document.getElementById('spots-paid');
+        if (el && paid > 0) el.textContent = paid.toLocaleString() + ' founding members joined. ';
         const spots = document.getElementById('spots-remaining');
-        if (spots) {
-            const remaining = Math.max(0, 500 - count);
-            spots.textContent = remaining + ' of 500 spots remaining';
-        }
+        if (spots) spots.textContent = remaining + ' of 500 spots remaining';
     } catch { /* silent */ }
 }
-loadCount();
+loadSpots();
 
 /* ── Scroll Reveal ── */
 const observer = new IntersectionObserver((entries) => {

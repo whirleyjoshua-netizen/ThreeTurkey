@@ -6,6 +6,7 @@ from fastapi.responses import FileResponse
 from seo_saas.storage.database import connect, close
 from seo_saas.routes.waitlist import router as waitlist_router
 from seo_saas.routes.admin import router as admin_router
+from seo_saas.routes.checkout import router as checkout_router
 
 STATIC = Path(__file__).parent / "static"
 
@@ -20,6 +21,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="Three Turkey", lifespan=lifespan)
 app.include_router(waitlist_router)
 app.include_router(admin_router)
+app.include_router(checkout_router)
 app.mount("/static", StaticFiles(directory=str(STATIC)), name="static")
 
 

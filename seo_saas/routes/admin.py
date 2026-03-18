@@ -52,10 +52,15 @@ async def get_emails(request: Request):
     if not _authed(request):
         raise HTTPException(401, "Not authenticated")
     if not store.db:
-        return {"emails": []}
+        return {"emails": [], "customers": []}
     async with store.db.execute("SELECT id, email, created_at FROM waitlist ORDER BY id DESC") as cursor:
         rows = await cursor.fetchall()
-    return {"emails": [{"id": r[0], "email": r[1], "created_at": r[2]} for r in rows]}
+    async with store.db.execute("SELECT id, email, amount_paid, paid_at FROM customers ORDER BY id DESC") as cursor:
+        crows = await cursor.fetchall()
+    return {
+        "emails": [{"id": r[0], "email": r[1], "created_at": r[2]} for r in rows],
+        "customers": [{"id": r[0], "email": r[1], "amount": r[2], "paid_at": r[3]} for r in crows],
+    }
 
 
 @router.get("/export.csv")
@@ -128,11 +133,20 @@ ADMIN_HTML = """\
 
   <!-- Dashboard -->
   <div id="dash-view">
-    <h2>Waitlist Signups</h2>
+    <h2>Paid Customers</h2>
+    <div class="actions">
+      <span class="count" id="customer-total"></span>
+      <button class="btn btn-sm btn-outline" onclick="doLogout()">Logout</button>
+    </div>
+    <table>
+      <thead><tr><th>#</th><th>Email</th><th>Amount</th><th>Paid</th></tr></thead>
+      <tbody id="customer-list"></tbody>
+    </table>
+
+    <h2 style="margin-top:32px;">Waitlist Signups</h2>
     <div class="actions">
       <span class="count" id="total"></span>
       <a class="btn btn-sm btn-outline" href="/admin/export.csv">Export CSV</a>
-      <button class="btn btn-sm btn-outline" onclick="doLogout()">Logout</button>
     </div>
     <table>
       <thead><tr><th>#</th><th>Email</th><th>Signed Up</th></tr></thead>
@@ -156,10 +170,14 @@ async function checkAuth() {
 function showDash(data) {
   loginView.style.display = 'none';
   dashView.style.display = 'block';
-  const tbody = document.getElementById('email-list');
+  const customers = data.customers || [];
+  document.getElementById('customer-total').textContent = customers.length + ' paid customer' + (customers.length !== 1 ? 's' : '') + ' (' + (500 - customers.length) + ' spots left)';
+  document.getElementById('customer-list').innerHTML = customers.map(c =>
+    '<tr><td>' + c.id + '</td><td>' + c.email + '</td><td>$' + (c.amount / 100).toFixed(2) + '</td><td>' + (c.paid_at || '') + '</td></tr>'
+  ).join('');
   const emails = data.emails || [];
   document.getElementById('total').textContent = emails.length + ' signup' + (emails.length !== 1 ? 's' : '');
-  tbody.innerHTML = emails.map((e, i) =>
+  document.getElementById('email-list').innerHTML = emails.map(e =>
     '<tr><td>' + e.id + '</td><td>' + e.email + '</td><td>' + (e.created_at || '') + '</td></tr>'
   ).join('');
 }
