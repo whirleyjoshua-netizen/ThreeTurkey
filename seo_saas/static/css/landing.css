@@ -131,6 +131,39 @@ ul { list-style: none; }
 .form-row input::placeholder { color: var(--fg2); }
 .form-note { font-size: .8rem; color: var(--fg2); margin-top: 10px; }
 
+/* ── Guarantee ── */
+.guarantee {
+    max-width: 480px;
+    margin: 20px auto 0;
+    padding: 16px 20px;
+    background: rgba(0, 184, 148, .08);
+    border: 1px solid rgba(0, 184, 148, .2);
+    border-radius: var(--radius);
+    text-align: center;
+}
+.guarantee-text {
+    font-size: .85rem;
+    color: var(--fg2);
+    line-height: 1.5;
+}
+.guarantee-text::before {
+    content: '\2714';
+    color: var(--green);
+    font-weight: 700;
+    margin-right: 6px;
+}
+.guarantee-badge {
+    margin-top: 12px;
+    font-size: .8rem;
+    color: var(--green);
+    font-weight: 600;
+    letter-spacing: .02em;
+}
+.guarantee-badge::before {
+    content: '\2714';
+    margin-right: 6px;
+}
+
 /* ── Sections ── */
 .section { padding: 100px 0; }
 .section-alt { background: var(--bg2); }
