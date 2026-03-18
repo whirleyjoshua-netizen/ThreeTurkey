@@ -68,6 +68,7 @@ ul { list-style: none; }
     backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(255,255,255,.06);
 }
+.nav .container { max-width: none; padding: 0 48px; }
 .nav-inner { display: flex; align-items: center; justify-content: space-between; }
 .logo { font-size: 1.5rem; font-weight: 800; color: var(--fg); letter-spacing: -.02em; }
 .logo:hover { text-decoration: none; }
