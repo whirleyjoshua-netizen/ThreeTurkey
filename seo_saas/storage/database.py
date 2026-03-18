@@ -1,22 +1,26 @@
+import aiosqlite
 from pathlib import Path
-import asyncpg
-from seo_saas.config import DATABASE_URL
 
-pool: asyncpg.Pool | None = None
-SCHEMA = Path(__file__).with_name("schema.sql").read_text()
+DB_PATH = Path(__file__).resolve().parent.parent.parent / "waitlist.db"
+
+db: aiosqlite.Connection | None = None
 
 
 async def connect():
-    global pool
-    if not DATABASE_URL:
-        return
-    pool = await asyncpg.create_pool(DATABASE_URL, min_size=1, max_size=5)
-    async with pool.acquire() as conn:
-        await conn.execute(SCHEMA)
+    global db
+    db = await aiosqlite.connect(str(DB_PATH))
+    await db.execute(
+        """CREATE TABLE IF NOT EXISTS waitlist (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            email       TEXT NOT NULL UNIQUE,
+            created_at  TEXT DEFAULT (datetime('now'))
+        )"""
+    )
+    await db.commit()
 
 
 async def close():
-    global pool
-    if pool:
-        await pool.close()
-        pool = None
+    global db
+    if db:
+        await db.close()
+        db = None

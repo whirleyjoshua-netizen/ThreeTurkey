@@ -1,37 +1,32 @@
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, EmailStr
-from seo_saas.storage.database import pool
+from pydantic import BaseModel
+import seo_saas.storage.database as store
 
 router = APIRouter(prefix="/api/waitlist")
 
 
 class WaitlistEntry(BaseModel):
     email: str
-    company: str = ""
-    website: str = ""
-    monthly_traffic: str = ""
-    referral: str = ""
 
 
 @router.post("")
 async def join_waitlist(entry: WaitlistEntry):
-    if not pool:
-        return {"ok": True, "message": "Waitlist recorded (no DB configured)"}
+    if not store.db:
+        raise HTTPException(500, "Database not ready")
     try:
-        await pool.execute(
-            """INSERT INTO waitlist (email, company, website, monthly_traffic, referral)
-               VALUES ($1, $2, $3, $4, $5)""",
-            entry.email, entry.company, entry.website,
-            entry.monthly_traffic, entry.referral,
-        )
-    except asyncpg.UniqueViolationError:
-        raise HTTPException(409, "Email already on waitlist")
+        await store.db.execute("INSERT INTO waitlist (email) VALUES (?)", (entry.email,))
+        await store.db.commit()
+    except Exception as e:
+        if "UNIQUE" in str(e):
+            raise HTTPException(409, "Email already on waitlist")
+        raise
     return {"ok": True}
 
 
 @router.get("/count")
 async def waitlist_count():
-    if not pool:
+    if not store.db:
         return {"count": 0}
-    row = await pool.fetchval("SELECT count(*) FROM waitlist")
-    return {"count": row}
+    async with store.db.execute("SELECT count(*) FROM waitlist") as cursor:
+        row = await cursor.fetchone()
+    return {"count": row[0] if row else 0}

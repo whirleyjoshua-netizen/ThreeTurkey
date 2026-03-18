@@ -5,6 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from seo_saas.storage.database import connect, close
 from seo_saas.routes.waitlist import router as waitlist_router
+from seo_saas.routes.admin import router as admin_router
 
 STATIC = Path(__file__).parent / "static"
 
@@ -16,8 +17,9 @@ async def lifespan(app: FastAPI):
     await close()
 
 
-app = FastAPI(title="Gobbl", lifespan=lifespan)
+app = FastAPI(title="Three Turkey", lifespan=lifespan)
 app.include_router(waitlist_router)
+app.include_router(admin_router)
 app.mount("/static", StaticFiles(directory=str(STATIC)), name="static")
 
 
@@ -29,3 +31,13 @@ async def health():
 @app.get("/")
 async def landing():
     return FileResponse(STATIC / "index.html", media_type="text/html")
+
+
+@app.get("/robots.txt")
+async def robots():
+    return FileResponse(STATIC / "robots.txt", media_type="text/plain")
+
+
+@app.get("/sitemap.xml")
+async def sitemap():
+    return FileResponse(STATIC / "sitemap.xml", media_type="application/xml")

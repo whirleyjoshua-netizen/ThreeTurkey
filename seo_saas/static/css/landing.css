@@ -30,8 +30,8 @@ a:hover { text-decoration: underline; }
 
 ul { list-style: none; }
 
-.container { max-width: none; margin: 0; padding: 0 48px; }
-.container-narrow { max-width: none; }
+.container { max-width: 1120px; margin: 0 auto; padding: 0 48px; }
+.container-narrow { max-width: 780px; margin: 0 auto; }
 
 /* ── Buttons ── */
 .btn {

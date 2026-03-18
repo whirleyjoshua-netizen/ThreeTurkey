@@ -1,3 +1,12 @@
+/* ── Nav Join button → focus email input ── */
+document.querySelectorAll('a[href="#waitlist"]').forEach(a => {
+    a.addEventListener('click', (e) => {
+        e.preventDefault();
+        const input = document.querySelector('#waitlist-form input[name="email"]');
+        if (input) { input.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => input.focus(), 400); }
+    });
+});
+
 /* ── Waitlist Form Handling ── */
 document.querySelectorAll('.waitlist-form').forEach(form => {
     form.addEventListener('submit', async (e) => {
@@ -5,7 +14,7 @@ document.querySelectorAll('.waitlist-form').forEach(form => {
         const input = form.querySelector('input[name="email"]');
         const btn = form.querySelector('button');
         const email = input.value.trim();
-        if (!email) return;
+        if (!email || !input.checkValidity()) { input.reportValidity(); return; }
 
         btn.disabled = true;
         btn.textContent = 'Joining...';
