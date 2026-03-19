@@ -35,19 +35,25 @@ async def create_checkout(body: CheckoutRequest):
     if not STRIPE_SECRET_KEY:
         raise HTTPException(500, "Stripe not configured")
 
+    if not STRIPE_PRICE_ID:
+        raise HTTPException(500, "Stripe price not configured")
+
     paid = await _paid_count()
     if paid >= MAX_SPOTS:
         raise HTTPException(410, "All lifetime spots have been claimed")
 
-    session = stripe.checkout.Session.create(
-        mode="payment",
-        customer_email=body.email,
-        line_items=[{"price": STRIPE_PRICE_ID, "quantity": 1}],
-        success_url=f"{BASE_URL}/checkout/success?session_id={{CHECKOUT_SESSION_ID}}",
-        cancel_url=f"{BASE_URL}/#pricing",
-        metadata={"email": body.email},
-    )
-    return {"url": session.url}
+    try:
+        session = stripe.checkout.Session.create(
+            mode="payment",
+            customer_email=body.email,
+            line_items=[{"price": STRIPE_PRICE_ID, "quantity": 1}],
+            success_url=f"{BASE_URL}/checkout/success?session_id={{CHECKOUT_SESSION_ID}}",
+            cancel_url=f"{BASE_URL}/#pricing",
+            metadata={"email": body.email},
+        )
+        return {"url": session.url}
+    except stripe.StripeError as e:
+        raise HTTPException(500, f"Stripe error: {str(e)}")
 
 
 @router.get("/api/checkout/spots")
