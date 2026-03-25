@@ -12,3 +12,13 @@ STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY", "")
 STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "")
 STRIPE_PRICE_ID = os.getenv("STRIPE_PRICE_ID", "")
 BASE_URL = os.getenv("BASE_URL", "https://threeturkey.com")
+
+# Google OAuth
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "")
+GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "")
+
+# OpenAI
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+
+# Session
+SESSION_SECRET = os.getenv("SESSION_SECRET", "change-me-in-production")
