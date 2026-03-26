@@ -9,6 +9,11 @@ from seo_saas.routes.admin import router as admin_router
 from seo_saas.routes.checkout import router as checkout_router
 from seo_saas.routes.auth import router as auth_router
 from seo_saas.routes.dashboard import router as dashboard_router
+from seo_saas.routes.audit import router as audit_router
+from seo_saas.routes.keywords import router as keywords_router
+from seo_saas.routes.insights import router as insights_router
+from seo_saas.routes.briefs import router as briefs_router
+from seo_saas.routes.content_gaps import router as content_gaps_router
 
 STATIC = Path(__file__).parent / "static"
 
@@ -26,6 +31,11 @@ app.include_router(admin_router)
 app.include_router(checkout_router)
 app.include_router(auth_router)
 app.include_router(dashboard_router)
+app.include_router(audit_router)
+app.include_router(keywords_router)
+app.include_router(insights_router)
+app.include_router(briefs_router)
+app.include_router(content_gaps_router)
 app.mount("/static", StaticFiles(directory=str(STATIC)), name="static")
 
 
