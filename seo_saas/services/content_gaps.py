@@ -56,20 +56,23 @@ async def analyze_content_gaps(db, user: dict, property_id: int) -> list[dict]:
 
     saved = []
     for gap in gaps:
-        volume_map = {"low": 100, "medium": 1000, "high": 5000}
-        est_vol = volume_map.get(str(gap.get("estimated_volume", "")).lower(), 500)
+        # Volume is an AI guess, so store the label rather than a fake number
+        volume_label = str(gap.get("estimated_volume", "")).lower()
+        if volume_label not in ("low", "medium", "high"):
+            volume_label = "medium"
         priority = min(10, max(1, gap.get("priority_score", 5)))
+        rationale = gap.get("rationale", "")
 
         await db.execute(
-            """INSERT INTO content_gaps (property_id, topic, priority_score, estimated_volume, status)
-               VALUES (?, ?, ?, ?, 'open')""",
-            (property_id, gap.get("topic", ""), priority, est_vol),
+            """INSERT INTO content_gaps (property_id, topic, priority_score, volume_label, rationale, status)
+               VALUES (?, ?, ?, ?, ?, 'open')""",
+            (property_id, gap.get("topic", ""), priority, volume_label, rationale),
         )
         saved.append({
             "topic": gap.get("topic", ""),
             "priority_score": priority,
-            "estimated_volume": gap.get("estimated_volume", "medium"),
-            "rationale": gap.get("rationale", ""),
+            "volume_label": volume_label,
+            "rationale": rationale,
             "status": "open",
         })
 

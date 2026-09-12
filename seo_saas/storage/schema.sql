@@ -134,6 +134,8 @@ CREATE TABLE IF NOT EXISTS content_gaps (
     competitor_url  TEXT,
     competitor_domain TEXT,
     estimated_volume INTEGER,
+    volume_label    TEXT,
+    rationale       TEXT,
     difficulty      INTEGER,
     priority_score  REAL,
     status          TEXT DEFAULT 'open',

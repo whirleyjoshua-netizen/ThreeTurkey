@@ -209,10 +209,10 @@ def _analyze_page(cr: CrawlResult) -> list[tuple[str, str, str]]:
         issues.append(("info", "social", "Missing Open Graph tags (og:title or og:description)"))
 
     # Load time
-    if cr.load_time_ms > 5000:
-        issues.append(("warning", "performance", f"Slow page load ({cr.load_time_ms}ms)"))
-    elif cr.load_time_ms > 10000:
+    if cr.load_time_ms > 10000:
         issues.append(("critical", "performance", f"Very slow page load ({cr.load_time_ms}ms)"))
+    elif cr.load_time_ms > 5000:
+        issues.append(("warning", "performance", f"Slow page load ({cr.load_time_ms}ms)"))
 
     return issues
 

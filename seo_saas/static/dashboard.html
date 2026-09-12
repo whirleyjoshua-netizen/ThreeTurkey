@@ -387,7 +387,7 @@ td.truncate { max-width: 300px; overflow: hidden; text-overflow: ellipsis; white
                 <div id="gaps-list" style="display:none">
                     <div style="overflow-x:auto">
                         <table>
-                            <thead><tr><th>Topic</th><th>Priority</th><th>Est. Volume</th><th>Status</th><th></th></tr></thead>
+                            <thead><tr><th>Topic</th><th>Priority</th><th title="AI estimate, not measured search data">Est. Demand (AI)</th><th>Status</th><th></th></tr></thead>
                             <tbody id="gaps-body"></tbody>
                         </table>
                     </div>
@@ -965,9 +965,9 @@ function renderGaps(gaps) {
     tbody.innerHTML = gaps.map(g => {
         const statusClass = g.status === 'done' ? 'badge-green' : g.status === 'in_progress' ? 'badge-warning' : 'badge-info';
         return `<tr>
-            <td>${esc(g.topic)}</td>
+            <td>${esc(g.topic)}${g.rationale ? `<div style="color:var(--fg2); font-size:12px; margin-top:4px">${esc(g.rationale)}</div>` : ''}</td>
             <td>${'*'.repeat(Math.min(g.priority_score || 0, 10))}</td>
-            <td>${fmtNum(g.estimated_volume || 0)}</td>
+            <td>${g.volume_label ? esc(g.volume_label.charAt(0).toUpperCase() + g.volume_label.slice(1)) : '—'}</td>
             <td><span class="badge ${statusClass}">${esc(g.status)}</span></td>
             <td>
                 ${g.status !== 'done' ? `<button class="btn btn-sm btn-outline" onclick="updateGapStatus(${g.id}, '${g.status === 'open' ? 'in_progress' : 'done'}')">
